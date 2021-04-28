@@ -1,7 +1,7 @@
 import {IConfig} from './config'
 
 export const mockServerUrl = (config: IConfig, path: string) => {
-  const baseUrl = `${config.mockProtocol}://${config.mockHost}`
+  const baseUrl = `http://${config.mockHost}`
   const url = new URL(path, baseUrl)
 
   url.port = config.mockPort.toString()
