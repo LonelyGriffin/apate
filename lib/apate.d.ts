@@ -1,12 +1,11 @@
 import { IConfig } from './config';
-export interface IApate {
-    run(): Promise<void>;
-    shutdown(): Promise<void>;
-}
-export declare class Apate implements IApate {
+import { HttpMocker } from './http-mocker';
+export declare class Apate {
     constructor(config?: Partial<IConfig>);
     run(): Promise<void>;
     shutdown(): Promise<void>;
+    mockHttp(): HttpMocker;
+    mockGet(path: string): HttpMocker;
     private config;
     private controlServer;
     private mockServer;

@@ -1,4 +1,4 @@
-import {IConfig} from '../lib/config'
+import {IConfig} from './config'
 
 export const mockServerUrl = (config: IConfig, path: string) => {
   const baseUrl = `${config.mockProtocol}://${config.mockHost}`

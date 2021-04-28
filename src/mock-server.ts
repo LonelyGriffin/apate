@@ -1,16 +1,19 @@
-import express, {Express} from 'express'
+import express, {Express, Request, Response} from 'express'
 import {Server} from 'node:http'
+import {IInterceptor} from './interceptor'
+import {mockServerUrl} from './utils'
 
 export interface IMockServer {
   run(): Promise<void>
   shutdown(): Promise<void>
+  queueInterceptor(interceptor: IInterceptor): void
 }
 
 export class MockServer implements IMockServer {
   constructor(private host: string, private port: number) {
     this.expressApp = express()
 
-    this.expressApp.get('/health', (_, res) => res.send('OK'))
+    this.expressApp.all('/*', this.allRoutesHandler.bind(this))
   }
 
   async run() {
@@ -36,6 +39,23 @@ export class MockServer implements IMockServer {
     this.expressServer = undefined
   }
 
+  queueInterceptor(interceptor: IInterceptor) {
+    this.interceptorsQueue.push(interceptor)
+  }
+
   private expressApp: Express
   private expressServer?: Server
+  private interceptorsQueue: IInterceptor[] = []
+
+  private allRoutesHandler(req: Request, res: Response) {
+    const matchedAndUnresolved = this.interceptorsQueue.find(
+      (interceptor) => !interceptor.isResolved && interceptor.match(req)
+    )
+
+    if (!matchedAndUnresolved) {
+      throw 'Not found interceptor'
+    }
+
+    return matchedAndUnresolved.resolve(req, res)
+  }
 }

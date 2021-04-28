@@ -4,7 +4,7 @@ import type {IApateConfig} from '../lib'
 import {Apate} from '../lib'
 import pactum from 'pactum'
 import {TEST_APATE_CONFIG} from './apate-config'
-import {controlServerUrl, mockServerUrl} from './utils'
+import {controlServerUrl, mockServerUrl} from '../src/utils'
 
 describe('General tests', () => {
   test('There are exported all entities', () => {
@@ -26,19 +26,20 @@ describe('General tests', () => {
         expect((res as any).code).toBe('ECONNREFUSED')
       })
   })
-  test('Check the mock server running and shutdown', async () => {
+  test('Base http mock case', async () => {
     const apate = new Apate(TEST_APATE_CONFIG)
-    const healthUrl = mockServerUrl(TEST_APATE_CONFIG, 'health')
+    const testUrl = mockServerUrl(TEST_APATE_CONFIG, 'test')
+    const expectedResponseBody = 'OK'
 
     await apate.run()
-    await pactum.spec().get(healthUrl).expectStatus(200).expectBody('OK')
+
+    apate
+      .mockGet(testUrl)
+      .withResponse((req, res) => res.send(expectedResponseBody))
+      .commit()
+
+    await pactum.spec().get(testUrl).expectBody(expectedResponseBody)
 
     await apate.shutdown()
-    await pactum
-      .spec()
-      .get(healthUrl)
-      .expect(({res}) => {
-        expect((res as any).code).toBe('ECONNREFUSED')
-      })
   })
 })

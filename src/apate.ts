@@ -1,13 +1,10 @@
 import {DEFAULT_CONFIG, IConfig} from './config'
 import {ControlServer, IControlServer} from './control-server'
-import {MockServer} from './mock-server'
+import {HttpMocker} from './http-mocker'
+import {IMockServer, MockServer} from './mock-server'
+import {mockServerUrl} from './utils'
 
-export interface IApate {
-  run(): Promise<void>
-  shutdown(): Promise<void>
-}
-
-export class Apate implements IApate {
+export class Apate {
   constructor(config?: Partial<IConfig>) {
     this.config = {...DEFAULT_CONFIG, ...config}
 
@@ -24,7 +21,15 @@ export class Apate implements IApate {
     await this.mockServer.shutdown()
   }
 
+  mockHttp() {
+    return new HttpMocker((interceptor) => this.mockServer.queueInterceptor(interceptor))
+  }
+
+  mockGet(path: string) {
+    return this.mockHttp().withMethod('GET').withUrl(mockServerUrl(this.config, path))
+  }
+
   private config: IConfig
   private controlServer: IControlServer
-  private mockServer: IControlServer
+  private mockServer: IMockServer
 }
