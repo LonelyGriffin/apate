@@ -1,12 +1,12 @@
 import express, {Express} from 'express'
 import {Server} from 'node:http'
 
-export interface IControlServer {
+export interface IMockServer {
   run(): Promise<void>
   shutdown(): Promise<void>
 }
 
-export class ControlServer implements IControlServer {
+export class MockServer implements IMockServer {
   constructor(private host: string, private port: number) {
     this.expressApp = express()
 

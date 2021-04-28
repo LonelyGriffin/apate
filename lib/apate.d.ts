@@ -9,4 +9,5 @@ export declare class Apate implements IApate {
     shutdown(): Promise<void>;
     private config;
     private controlServer;
+    private mockServer;
 }
