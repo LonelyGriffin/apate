@@ -1,5 +1,8 @@
 import {Apate} from '../lib'
 
-test('test is working', () => {
+// Check types exports
+import type {IApateConfig} from '../lib'
+
+test('There are exported all entities', () => {
   expect(Apate).toBeTruthy()
 })
