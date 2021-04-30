@@ -5,7 +5,7 @@ import {Apate} from '../lib'
 import pactum from 'pactum'
 import {TEST_APATE_CONFIG} from './apate-config'
 import {controlServerUrl, mockServerUrl} from '../src/utils'
-import {HttpMethodExactMatcher, HttpPathExactMatcher} from '../lib/http-matcher'
+import {HttpMethodExactMatcher, HttpPathExactMatcher} from '../lib/matcher/http-matcher'
 
 describe('General tests', () => {
   test('There are exported all entities', () => {

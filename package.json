@@ -7,7 +7,7 @@
     "test:jest": "jest --runInBand",
     "test:debugger": "npm run build && node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config jest.config.js",
     "test": "npm run build && npm run test:jest",
-    "build": "tsc --build"
+    "build": "rm -rf ./lib && tsc --build"
   },
   "repository": {
     "type": "git",
