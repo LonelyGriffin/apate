@@ -1,5 +1,5 @@
-import {HttpInterceptorBuilder} from './http-interceptor-builder'
-import {HttpInterceptor} from './http-interceptor'
+import {HttpInterceptorBuilder} from './interceptor/http-interceptor-builder'
+import {HttpInterceptor} from './interceptor/http-interceptor'
 
 export class HttpMocker extends HttpInterceptorBuilder {
   constructor(private commitHandler = (interceptor: HttpInterceptor) => {}) {

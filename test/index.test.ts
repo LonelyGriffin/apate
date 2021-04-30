@@ -36,7 +36,7 @@ describe('General tests', () => {
     apate
       .mockHttp()
       .match(new HttpPathExactMatcher('/test'))
-      .match(new HttpMethodExactMatcher('POST'))
+      .match(new HttpMethodExactMatcher('GET'))
       .resolveWith((req, res) => res.send(expectedResponseBody))
       .commit()
 

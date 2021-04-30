@@ -1,7 +1,7 @@
 import express, {Express, Request, Response} from 'express'
 import {Server} from 'node:http'
-import {IInterceptor} from './interceptor'
-import {mockServerUrl} from './utils'
+import {IInterceptor} from '../interceptor/interceptor'
+import {mockServerUrl} from '../utils'
 
 export interface IMockServer {
   run(): Promise<void>

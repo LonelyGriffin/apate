@@ -1,5 +1,5 @@
 import {Request, Response} from 'express'
-import {IHttpMatcher} from './http-matcher'
+import {IHttpMatcher} from '../matcher/http-matcher'
 import {IInterceptor} from './interceptor'
 
 export type HttpInterceptorResolver = (req: Request, res: Response) => Response

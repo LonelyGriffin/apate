@@ -1,7 +1,7 @@
 import {DEFAULT_CONFIG, IConfig} from './config'
-import {ControlServer, IControlServer} from './control-server'
+import {ControlServer, IControlServer} from './server/control-server'
 import {HttpMocker} from './http-mocker'
-import {IMockServer, MockServer} from './mock-server'
+import {IMockServer, MockServer} from './server/mock-server'
 
 export class Apate {
   constructor(config?: Partial<IConfig>) {

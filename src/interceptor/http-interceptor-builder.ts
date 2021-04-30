@@ -1,7 +1,7 @@
 import {HttpInterceptorResolver, HttpInterceptor} from './http-interceptor'
-import {IHttpMatcher} from './http-matcher'
+import {IHttpMatcher} from '../matcher/http-matcher'
 import {Request} from 'express'
-import {AndMatcher} from './matcher'
+import {AndMatcher} from '../matcher/matcher'
 
 export class HttpInterceptorBuilder {
   match(matcher: IHttpMatcher) {
