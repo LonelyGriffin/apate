@@ -2,7 +2,6 @@ import {DEFAULT_CONFIG, IConfig} from './config'
 import {ControlServer, IControlServer} from './control-server'
 import {HttpMocker} from './http-mocker'
 import {IMockServer, MockServer} from './mock-server'
-import {mockServerUrl} from './utils'
 
 export class Apate {
   constructor(config?: Partial<IConfig>) {
@@ -23,10 +22,6 @@ export class Apate {
 
   mockHttp() {
     return new HttpMocker((interceptor) => this.mockServer.queueInterceptor(interceptor))
-  }
-
-  mockGet(path: string) {
-    return this.mockHttp().withMethod('GET').withUrl(mockServerUrl(this.config, path))
   }
 
   private config: IConfig

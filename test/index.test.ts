@@ -5,6 +5,7 @@ import {Apate} from '../lib'
 import pactum from 'pactum'
 import {TEST_APATE_CONFIG} from './apate-config'
 import {controlServerUrl, mockServerUrl} from '../src/utils'
+import {HttpMethodExactMatcher, HttpPathExactMatcher} from '../lib/http-matcher'
 
 describe('General tests', () => {
   test('There are exported all entities', () => {
@@ -28,17 +29,18 @@ describe('General tests', () => {
   })
   test('Base http mock case', async () => {
     const apate = new Apate(TEST_APATE_CONFIG)
-    const testUrl = mockServerUrl(TEST_APATE_CONFIG, 'test')
     const expectedResponseBody = 'OK'
 
     await apate.run()
 
     apate
-      .mockGet(testUrl)
-      .withResponse((req, res) => res.send(expectedResponseBody))
+      .mockHttp()
+      .match(new HttpPathExactMatcher('/test'))
+      .match(new HttpMethodExactMatcher('POST'))
+      .resolveWith((req, res) => res.send(expectedResponseBody))
       .commit()
 
-    await pactum.spec().get(testUrl).expectBody(expectedResponseBody)
+    await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expectedResponseBody)
 
     await apate.shutdown()
   })

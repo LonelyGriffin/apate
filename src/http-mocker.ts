@@ -3,7 +3,7 @@ import {HttpInterceptor} from './http-interceptor'
 
 export class HttpMocker extends HttpInterceptorBuilder {
   constructor(private commitHandler = (interceptor: HttpInterceptor) => {}) {
-    super({})
+    super()
   }
 
   commit() {

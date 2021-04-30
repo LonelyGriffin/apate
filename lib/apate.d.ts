@@ -5,7 +5,6 @@ export declare class Apate {
     run(): Promise<void>;
     shutdown(): Promise<void>;
     mockHttp(): HttpMocker;
-    mockGet(path: string): HttpMocker;
     private config;
     private controlServer;
     private mockServer;

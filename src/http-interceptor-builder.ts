@@ -1,33 +1,24 @@
-import {HttpInterceptorResolver, IHttpMatchConfig, HttpInterceptor} from './http-interceptor'
+import {HttpInterceptorResolver, HttpInterceptor} from './http-interceptor'
+import {IHttpMatcher} from './http-matcher'
+import {Request} from 'express'
+import {AndMatcher} from './matcher'
 
 export class HttpInterceptorBuilder {
-  constructor(private matchConfig: IHttpMatchConfig = {}) {}
-  withUrl(url: string) {
-    this.matchConfig.url = url
+  match(matcher: IHttpMatcher) {
+    this.matcher = new AndMatcher<Request>([matcher])
+    return this
+  }
+  andMatch(matcher: IHttpMatcher) {
+    this.matcher = this.matcher.and(matcher)
+    return this
+  }
+  orMatch(matcher: IHttpMatcher) {
+    this.matcher = this.matcher.or(matcher)
     return this
   }
 
-  withMethod(method: string) {
-    this.matchConfig.method = method
-    return this
-  }
-
-  withBody(body: string) {
-    this.matchConfig.body = body
-    return this
-  }
-
-  withHeader(name: string, value: string) {
-    if (!this.matchConfig.headers) {
-      this.matchConfig.headers = {}
-    }
-    this.matchConfig.headers[name] = value
-    return this
-  }
-
-  withResponse(resolver: HttpInterceptorResolver) {
+  resolveWith(resolver: HttpInterceptorResolver) {
     this.resolver = resolver
-
     return this
   }
 
@@ -35,8 +26,9 @@ export class HttpInterceptorBuilder {
     if (!this.resolver) {
       throw 'When the interceptor had been building, A response resolver was not set. You should use the withResponse method for example.'
     }
-    return new HttpInterceptor(this.matchConfig, this.resolver)
+    return new HttpInterceptor(this.matcher, this.resolver)
   }
 
   private resolver?: HttpInterceptorResolver
+  private matcher = new AndMatcher<Request>()
 }
