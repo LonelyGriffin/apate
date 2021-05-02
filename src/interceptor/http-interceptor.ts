@@ -1,10 +1,10 @@
 import {Request, Response} from 'express'
-import {IHttpMatcher} from '../matcher/http-matcher'
+import {IMatcher} from '../matcher/matcher'
 import {IInterceptor} from './interceptor'
 
 export type HttpInterceptorResolver = (req: Request, res: Response) => Response
 export class HttpInterceptor implements IInterceptor {
-  constructor(private matcher: IHttpMatcher, private resolver: HttpInterceptorResolver) {}
+  constructor(private matcher: IMatcher<Request>, private resolver: HttpInterceptorResolver) {}
 
   get isResolved() {
     return this._isResolved

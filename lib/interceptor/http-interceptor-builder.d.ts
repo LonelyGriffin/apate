@@ -1,11 +1,14 @@
 import { HttpInterceptorResolver, HttpInterceptor } from './http-interceptor';
-import { IHttpMatcher } from '../matcher/http-matcher';
+import { AnyHttpMather, AnyHttpMatherClass } from '../matcher/http-matcher';
+declare type MatchArgs = [AnyHttpMather['type'], ...ConstructorParameters<AnyHttpMatherClass>] | [AnyHttpMather];
 export declare class HttpInterceptorBuilder {
-    match(matcher: IHttpMatcher): this;
-    andMatch(matcher: IHttpMatcher): this;
-    orMatch(matcher: IHttpMatcher): this;
+    match(...args: MatchArgs): this;
+    andMatch(...args: MatchArgs): this;
+    orMatch(...args: MatchArgs): this;
     resolveWith(resolver: HttpInterceptorResolver): this;
     buildInterceptor(): HttpInterceptor;
     private resolver?;
     private matcher;
+    private matchArgsToMatcher;
 }
+export {};

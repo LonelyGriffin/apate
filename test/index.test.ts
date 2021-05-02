@@ -36,7 +36,24 @@ describe('General tests', () => {
     apate
       .mockHttp()
       .match(new HttpPathExactMatcher('/test'))
-      .match(new HttpMethodExactMatcher('GET'))
+      .andMatch(new HttpMethodExactMatcher('GET'))
+      .resolveWith((req, res) => res.send(expectedResponseBody))
+      .commit()
+
+    await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expectedResponseBody)
+
+    await apate.shutdown()
+  })
+  test('Base http mock case', async () => {
+    const apate = new Apate(TEST_APATE_CONFIG)
+    const expectedResponseBody = 'OK'
+
+    await apate.run()
+
+    apate
+      .mockHttp()
+      .match('method-exact', 'GET')
+      .andMatch('path-exact', '/test')
       .resolveWith((req, res) => res.send(expectedResponseBody))
       .commit()
 

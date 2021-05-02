@@ -1,24 +1,26 @@
 import { Request } from 'express';
 import { IMatcher } from './matcher';
-export interface IHttpMatcher extends IMatcher<Request> {
-}
-export declare class HttpPathExactMatcher implements IHttpMatcher {
+export declare class HttpPathExactMatcher implements IMatcher<Request> {
     private expected;
-    constructor(expected: string);
-    match(req: Request): boolean;
-}
-export declare class HttpMethodExactMatcher implements IHttpMatcher, ISerializable {
-    private expected;
+    readonly type = "path-exact";
     constructor(expected: string);
     match(req: Request): boolean;
     serialize(): {
-        name: string;
+        type: string;
         expected: string;
     };
-    static deserialize(serializeObject: SerializeObjectType<HttpMethodExactMatcher>): HttpMethodExactMatcher;
+    static deserialize(serialized: ISerialized<HttpMethodExactMatcher>): HttpMethodExactMatcher;
 }
-interface ISerializable<T = unknown> {
-    serialize(): T;
+export declare class HttpMethodExactMatcher implements IMatcher<Request> {
+    private expected;
+    readonly type = "method-exact";
+    constructor(expected: string);
+    match(req: Request): boolean;
+    serialize(): {
+        type: string;
+        expected: string;
+    };
+    static deserialize(serialized: ISerialized<HttpMethodExactMatcher>): HttpMethodExactMatcher;
 }
-declare type SerializeObjectType<T extends ISerializable> = ReturnType<T['serialize']>;
-export {};
+export declare type AnyHttpMather = HttpPathExactMatcher | HttpMethodExactMatcher;
+export declare type AnyHttpMatherClass = typeof HttpPathExactMatcher | typeof HttpMethodExactMatcher;

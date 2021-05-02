@@ -1,19 +1,23 @@
 import {HttpInterceptorResolver, HttpInterceptor} from './http-interceptor'
-import {IHttpMatcher} from '../matcher/http-matcher'
 import {Request} from 'express'
-import {AndMatcher} from '../matcher/matcher'
+import {AnyHttpMather, AnyHttpMatherClass} from '../matcher/http-matcher'
+import {AndMatcher} from '../matcher/logical-matcher'
+import {IMatcher} from '../matcher/matcher'
+import {matcherByType} from '../matcher/matcher-by-type'
+
+type MatchArgs = [AnyHttpMather['type'], ...ConstructorParameters<AnyHttpMatherClass>] | [AnyHttpMather]
 
 export class HttpInterceptorBuilder {
-  match(matcher: IHttpMatcher) {
-    this.matcher = new AndMatcher<Request>([matcher])
+  match(...args: MatchArgs) {
+    this.matcher = new AndMatcher<Request>([this.matchArgsToMatcher(args)])
     return this
   }
-  andMatch(matcher: IHttpMatcher) {
-    this.matcher = this.matcher.and(matcher)
+  andMatch(...args: MatchArgs) {
+    this.matcher = this.matcher.and(this.matchArgsToMatcher(args))
     return this
   }
-  orMatch(matcher: IHttpMatcher) {
-    this.matcher = this.matcher.or(matcher)
+  orMatch(...args: MatchArgs) {
+    this.matcher = this.matcher.or(this.matchArgsToMatcher(args))
     return this
   }
 
@@ -31,4 +35,13 @@ export class HttpInterceptorBuilder {
 
   private resolver?: HttpInterceptorResolver
   private matcher = new AndMatcher<Request>()
+
+  private matchArgsToMatcher = (args: MatchArgs): IMatcher<Request> => {
+    if (typeof args[0] === 'string') {
+      const MatcherClass = matcherByType(args[0]) as any
+      return new MatcherClass(...args.slice(1))
+    }
+
+    return args[0]
+  }
 }
