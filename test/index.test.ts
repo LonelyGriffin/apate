@@ -35,8 +35,8 @@ describe('General tests', () => {
 
     apate
       .mockHttp()
-      .match(new HttpPathExactMatcher('/test'))
-      .andMatch(new HttpMethodExactMatcher('GET'))
+      .match('method-exact', 'GET')
+      .andMatch('path-exact', '/test')
       .resolveWith((req, res) => res.send(expectedResponseBody))
       .commit()
 
@@ -44,7 +44,7 @@ describe('General tests', () => {
 
     await apate.shutdown()
   })
-  test('Base http mock case', async () => {
+  test('Custom matcher', async () => {
     const apate = new Apate(TEST_APATE_CONFIG)
     const expectedResponseBody = 'OK'
 
@@ -52,8 +52,7 @@ describe('General tests', () => {
 
     apate
       .mockHttp()
-      .match('method-exact', 'GET')
-      .andMatch('path-exact', '/test')
+      .match('custom', (request, context) => context.result, {result: true})
       .resolveWith((req, res) => res.send(expectedResponseBody))
       .commit()
 

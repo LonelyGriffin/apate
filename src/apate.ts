@@ -1,6 +1,6 @@
 import {DEFAULT_CONFIG, IConfig} from './config'
+import {HttpInterceptorBuilder} from './interceptor/http-interceptor-builder'
 import {ControlServer, IControlServer} from './server/control-server'
-import {HttpMocker} from './http-mocker'
 import {IMockServer, MockServer} from './server/mock-server'
 
 export class Apate {
@@ -21,7 +21,7 @@ export class Apate {
   }
 
   mockHttp() {
-    return new HttpMocker((interceptor) => this.mockServer.queueInterceptor(interceptor))
+    return new HttpInterceptorBuilder((interceptor) => this.mockServer.queueInterceptor(interceptor))
   }
 
   private config: IConfig

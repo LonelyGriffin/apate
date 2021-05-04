@@ -22,5 +22,3 @@ export declare class HttpMethodExactMatcher implements IMatcher<Request> {
     };
     static deserialize(serialized: ISerialized<HttpMethodExactMatcher>): HttpMethodExactMatcher;
 }
-export declare type AnyHttpMather = HttpPathExactMatcher | HttpMethodExactMatcher;
-export declare type AnyHttpMatherClass = typeof HttpPathExactMatcher | typeof HttpMethodExactMatcher;

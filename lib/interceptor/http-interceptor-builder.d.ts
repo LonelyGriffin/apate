@@ -1,10 +1,17 @@
 import { HttpInterceptorResolver, HttpInterceptor } from './http-interceptor';
-import { AnyHttpMather, AnyHttpMatherClass } from '../matcher/http-matcher';
-declare type MatchArgs = [AnyHttpMather['type'], ...ConstructorParameters<AnyHttpMatherClass>] | [AnyHttpMather];
+import { Request } from 'express';
+declare type MatchMethod = {
+    <C>(type: 'custom', matcher: (target: Request, context: C) => boolean, context: C): HttpInterceptorBuilder;
+    (type: 'path-exact', path: string): HttpInterceptorBuilder;
+    (type: 'method-exact', path: string): HttpInterceptorBuilder;
+};
 export declare class HttpInterceptorBuilder {
-    match(...args: MatchArgs): this;
-    andMatch(...args: MatchArgs): this;
-    orMatch(...args: MatchArgs): this;
+    private commitHandler;
+    constructor(commitHandler?: (interceptor: HttpInterceptor) => void);
+    commit(): HttpInterceptor;
+    match: MatchMethod;
+    andMatch: MatchMethod;
+    orMatch: MatchMethod;
     resolveWith(resolver: HttpInterceptorResolver): this;
     buildInterceptor(): HttpInterceptor;
     private resolver?;

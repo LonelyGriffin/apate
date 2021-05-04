@@ -1,9 +1,11 @@
 import {HttpMethodExactMatcher, HttpPathExactMatcher} from './http-matcher'
 import {AndMatcher, OrMatcher} from './logical-matcher'
-import {MatcherType} from './matcher'
+import {CustomMatcher, MatcherType} from './matcher'
 
 export const matcherByType = (type: MatcherType) => {
   switch (type) {
+    case 'custom':
+      return CustomMatcher
     case 'or':
       return OrMatcher
     case 'and':

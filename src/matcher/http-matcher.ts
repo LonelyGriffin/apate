@@ -38,6 +38,3 @@ export class HttpMethodExactMatcher implements IMatcher<Request> {
     return new HttpMethodExactMatcher(serialized.expected)
   }
 }
-
-export type AnyHttpMather = HttpPathExactMatcher | HttpMethodExactMatcher
-export type AnyHttpMatherClass = typeof HttpPathExactMatcher | typeof HttpMethodExactMatcher

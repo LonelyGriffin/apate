@@ -1,10 +1,10 @@
 import { IConfig } from './config';
-import { HttpMocker } from './http-mocker';
+import { HttpInterceptorBuilder } from './interceptor/http-interceptor-builder';
 export declare class Apate {
     constructor(config?: Partial<IConfig>);
     run(): Promise<void>;
     shutdown(): Promise<void>;
-    mockHttp(): HttpMocker;
+    mockHttp(): HttpInterceptorBuilder;
     private config;
     private controlServer;
     private mockServer;
