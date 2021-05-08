@@ -12,7 +12,7 @@ type MatchMethod = {
 }
 
 export class HttpInterceptorBuilder {
-  constructor(private commitHandler = async (interceptor: HttpInterceptor) => {}) {}
+  constructor(private commitHandler = async (interceptor: HttpInterceptor) => {}, private scope?: string) {}
 
   async commit() {
     const interceptor = this.buildInterceptor()
@@ -44,7 +44,7 @@ export class HttpInterceptorBuilder {
     if (!this.resolver) {
       throw 'When the interceptor had been building, A response resolver was not set. You should use the withResponse method for example.'
     }
-    return new HttpInterceptor(this.matcher, this.resolver)
+    return new HttpInterceptor(this.matcher, this.resolver, this.scope)
   }
 
   private resolver?: HttpResolver

@@ -43,6 +43,22 @@ describe('General tests', () => {
 
     await apate.shutdown()
   })
+  test('Check method exact interceptor only', async () => {
+    const apate = new Apate(TEST_APATE_CONFIG)
+    const expectedResponseBody = 'OK'
+
+    await apate.run()
+
+    await apate
+      .mockHttp()
+      .match('method-exact', 'GET')
+      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
+      .commit()
+
+    await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expectedResponseBody)
+
+    await apate.shutdown()
+  })
   test('Custom matcher', async () => {
     const apate = new Apate(TEST_APATE_CONFIG)
     const expectedResponseBody = 'OK'
@@ -56,6 +72,42 @@ describe('General tests', () => {
       .commit()
 
     await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expectedResponseBody)
+
+    await apate.shutdown()
+  })
+  it.only('Separation by scope prototype', async () => {
+    const expectedForFirstRequest = 'expected-request-body-for-first-request'
+    const expectedForSecondRequest = 'expected-request-body-for-second-request'
+    const apate = new Apate(TEST_APATE_CONFIG)
+
+    await apate.run()
+
+    await apate
+      .mockHttp('first-scope')
+      .match('method-exact', 'GET')
+      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedForFirstRequest)
+      .commit()
+
+    await apate
+      .mockHttp('second-scope')
+      .match('method-exact', 'GET')
+      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedForSecondRequest)
+      .commit()
+
+    // make request for second in order interceptor firstly
+    // to check how scope separation work
+
+    await pactum
+      .spec()
+      .get(mockServerUrl(TEST_APATE_CONFIG, 'test'))
+      .withQueryParams('apate-scope', 'second-scope')
+      .expectBody(expectedForSecondRequest)
+
+    await pactum
+      .spec()
+      .get(mockServerUrl(TEST_APATE_CONFIG, 'test'))
+      .withQueryParams('apate-scope', 'first-scope')
+      .expectBody(expectedForFirstRequest)
 
     await apate.shutdown()
   })

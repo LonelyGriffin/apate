@@ -50,8 +50,9 @@ export class MockServer implements IMockServer {
   private interceptorsQueue: IInterceptor[] = []
 
   private allRoutesHandler(req: Request, res: Response) {
+    const scope = req.query['apate-scope']
     const matchedAndUnresolved = this.interceptorsQueue.find(
-      (interceptor) => !interceptor.isResolved && interceptor.match(req)
+      (interceptor) => !interceptor.isResolved && interceptor.match(req) && scope === interceptor.scope
     )
 
     if (!matchedAndUnresolved) {

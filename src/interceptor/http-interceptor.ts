@@ -5,7 +5,7 @@ import {HttpResolver} from '../resolver/http-resolver'
 import {ISerializable, ISerialized} from '../serializable'
 import {IInterceptor} from './interceptor'
 export class HttpInterceptor implements IInterceptor, ISerializable {
-  constructor(private matcher: IMatcher<Request>, private resolver: HttpResolver) {}
+  constructor(private matcher: IMatcher<Request>, private resolver: HttpResolver, public readonly scope?: string) {}
 
   get isResolved() {
     return this._isResolved
@@ -21,6 +21,7 @@ export class HttpInterceptor implements IInterceptor, ISerializable {
 
   serialize() {
     return {
+      scope: this.scope,
       matcher: this.matcher.serialize() as any,
       resolver: this.resolver.serialize()
     }
@@ -29,7 +30,7 @@ export class HttpInterceptor implements IInterceptor, ISerializable {
   static deserialize(serialized: ISerialized<HttpInterceptor>) {
     const matcher = deserializeAnyMatcher(serialized.matcher) as IMatcher<Request>
     const resolver = HttpResolver.deserialize(serialized.resolver)
-    return new HttpInterceptor(matcher, resolver)
+    return new HttpInterceptor(matcher, resolver, serialized.scope)
   }
 
   private _isResolved = false

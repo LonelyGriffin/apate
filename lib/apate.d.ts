@@ -6,7 +6,7 @@ export declare class Apate {
     constructor(config?: Partial<IConfig>);
     run(): Promise<void>;
     shutdown(): Promise<void>;
-    mockHttp(): HttpInterceptorBuilder;
+    mockHttp(scope?: string): HttpInterceptorBuilder;
     private config;
     private controlServer;
     private mockServer;

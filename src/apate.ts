@@ -23,8 +23,11 @@ export class Apate {
     await this.mockServer.shutdown()
   }
 
-  mockHttp() {
-    return new HttpInterceptorBuilder(async (interceptor) => await this.client.queueHttpInterceptors(interceptor))
+  mockHttp(scope?: string) {
+    return new HttpInterceptorBuilder(
+      async (interceptor) => await this.client.queueHttpInterceptors(interceptor),
+      scope
+    )
   }
 
   private config: IConfig

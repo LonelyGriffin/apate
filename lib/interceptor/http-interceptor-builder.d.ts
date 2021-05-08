@@ -8,7 +8,8 @@ declare type MatchMethod = {
 };
 export declare class HttpInterceptorBuilder {
     private commitHandler;
-    constructor(commitHandler?: (interceptor: HttpInterceptor) => Promise<void>);
+    private scope?;
+    constructor(commitHandler?: (interceptor: HttpInterceptor) => Promise<void>, scope?: string | undefined);
     commit(): Promise<HttpInterceptor>;
     match: MatchMethod;
     andMatch: MatchMethod;

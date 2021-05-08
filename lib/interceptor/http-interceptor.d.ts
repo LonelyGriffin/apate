@@ -6,11 +6,13 @@ import { IInterceptor } from './interceptor';
 export declare class HttpInterceptor implements IInterceptor, ISerializable {
     private matcher;
     private resolver;
-    constructor(matcher: IMatcher<Request>, resolver: HttpResolver);
+    readonly scope?: string | undefined;
+    constructor(matcher: IMatcher<Request>, resolver: HttpResolver, scope?: string | undefined);
     get isResolved(): boolean;
     match(req: Request): boolean;
     resolve(req: Request, res: Response): Response<any, Record<string, any>>;
     serialize(): {
+        scope: string | undefined;
         matcher: any;
         resolver: {
             resolver: import("transferable-function").TransferableFunction;
