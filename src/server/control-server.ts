@@ -1,5 +1,8 @@
-import express, {Express} from 'express'
+import express, {Express, Request, Response} from 'express'
 import {Server} from 'node:http'
+import {HttpInterceptor} from '../interceptor/http-interceptor'
+import {IMockServer} from './mock-server'
+import bodyParser from 'body-parser'
 
 export interface IControlServer {
   run(): Promise<void>
@@ -7,10 +10,14 @@ export interface IControlServer {
 }
 
 export class ControlServer implements IControlServer {
-  constructor(private host: string, private port: number) {
+  constructor(private host: string, private port: number, private mockServer: IMockServer) {
     this.expressApp = express()
 
+    this.expressApp.use(bodyParser.json())
+
     this.expressApp.get('/health', (_, res) => res.send('OK'))
+
+    this.expressApp.post('/http-interceptors', this.handlePostHttpInterceptor)
   }
 
   async run() {
@@ -38,4 +45,9 @@ export class ControlServer implements IControlServer {
 
   private expressApp: Express
   private expressServer?: Server
+  private handlePostHttpInterceptor = (req: Request, res: Response) => {
+    const interceptors: HttpInterceptor[] = req.body.map((x: any) => HttpInterceptor.deserialize(x))
+    this.mockServer.queueInterceptors(...interceptors)
+    return res.send(200)
+  }
 }

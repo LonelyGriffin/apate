@@ -5,7 +5,6 @@ import {Apate} from '../lib'
 import pactum from 'pactum'
 import {TEST_APATE_CONFIG} from './apate-config'
 import {controlServerUrl, mockServerUrl} from '../src/utils'
-import {HttpMethodExactMatcher, HttpPathExactMatcher} from '../lib/matcher/http-matcher'
 
 describe('General tests', () => {
   test('There are exported all entities', () => {
@@ -33,11 +32,11 @@ describe('General tests', () => {
 
     await apate.run()
 
-    apate
+    await apate
       .mockHttp()
       .match('method-exact', 'GET')
       .andMatch('path-exact', '/test')
-      .resolveWith((req, res) => res.send(expectedResponseBody))
+      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
       .commit()
 
     await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expectedResponseBody)
@@ -50,10 +49,10 @@ describe('General tests', () => {
 
     await apate.run()
 
-    apate
+    await apate
       .mockHttp()
       .match('custom', (request, context) => context.result, {result: true})
-      .resolveWith((req, res) => res.send(expectedResponseBody))
+      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
       .commit()
 
     await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expectedResponseBody)

@@ -1,0 +1,1 @@
+{"version":3,"file":"deserialize-any-matcher.js","sourceRoot":"","sources":["../../src/matcher/deserialize-any-matcher.ts"],"names":[],"mappings":";;;AAAA,qDAA+C;AAExC,IAAM,qBAAqB,GAAG,UAAC,iBAAsB;IAC1D,IAAM,OAAO,GAAG,+BAAa,CAAC,iBAAiB,CAAC,IAAI,CAAQ,CAAA;IAC5D,OAAO,OAAO,CAAC,WAAW,CAAC,iBAAiB,CAAC,CAAA;AAC/C,CAAC,CAAA;AAHY,QAAA,qBAAqB,yBAGjC"}

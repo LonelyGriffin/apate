@@ -1,13 +1,22 @@
 import { Request, Response } from 'express';
 import { IMatcher } from '../matcher/matcher';
+import { HttpResolver } from '../resolver/http-resolver';
+import { ISerializable, ISerialized } from '../serializable';
 import { IInterceptor } from './interceptor';
-export declare type HttpInterceptorResolver = (req: Request, res: Response) => Response;
-export declare class HttpInterceptor implements IInterceptor {
+export declare class HttpInterceptor implements IInterceptor, ISerializable {
     private matcher;
     private resolver;
-    constructor(matcher: IMatcher<Request>, resolver: HttpInterceptorResolver);
+    constructor(matcher: IMatcher<Request>, resolver: HttpResolver);
     get isResolved(): boolean;
     match(req: Request): boolean;
     resolve(req: Request, res: Response): Response<any, Record<string, any>>;
+    serialize(): {
+        matcher: any;
+        resolver: {
+            resolver: import("transferable-function").TransferableFunction;
+            context: unknown;
+        };
+    };
+    static deserialize(serialized: ISerialized<HttpInterceptor>): HttpInterceptor;
     private _isResolved;
 }

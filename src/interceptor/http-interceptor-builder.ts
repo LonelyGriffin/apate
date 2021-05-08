@@ -1,8 +1,9 @@
-import {HttpInterceptorResolver, HttpInterceptor} from './http-interceptor'
+import {HttpInterceptor} from './http-interceptor'
 import {Request} from 'express'
 import {AndMatcher} from '../matcher/logical-matcher'
 import {IMatcher} from '../matcher/matcher'
 import {matcherByType} from '../matcher/matcher-by-type'
+import {HttpResolver} from '../resolver/http-resolver'
 
 type MatchMethod = {
   <C>(type: 'custom', matcher: (target: Request, context: C) => boolean, context: C): HttpInterceptorBuilder
@@ -11,12 +12,12 @@ type MatchMethod = {
 }
 
 export class HttpInterceptorBuilder {
-  constructor(private commitHandler = (interceptor: HttpInterceptor) => {}) {}
+  constructor(private commitHandler = async (interceptor: HttpInterceptor) => {}) {}
 
-  commit() {
+  async commit() {
     const interceptor = this.buildInterceptor()
 
-    this.commitHandler(interceptor)
+    await this.commitHandler(interceptor)
 
     return interceptor
   }
@@ -34,8 +35,8 @@ export class HttpInterceptorBuilder {
     return this
   }
 
-  resolveWith(resolver: HttpInterceptorResolver) {
-    this.resolver = resolver
+  resolveWith(...params: ConstructorParameters<typeof HttpResolver>) {
+    this.resolver = new HttpResolver(...params)
     return this
   }
 
@@ -46,7 +47,7 @@ export class HttpInterceptorBuilder {
     return new HttpInterceptor(this.matcher, this.resolver)
   }
 
-  private resolver?: HttpInterceptorResolver
+  private resolver?: HttpResolver
   private matcher = new AndMatcher<Request>()
 
   private matchArgsToMatcher = (args: any): IMatcher<Request> => {

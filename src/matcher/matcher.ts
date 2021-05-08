@@ -1,4 +1,5 @@
 import {serializeFn, deserializeFn} from 'transferable-function'
+import {ISerializable, ISerialized} from '../serializable'
 
 export type MatcherType = 'custom' | 'or' | 'and' | 'path-exact' | 'method-exact'
 

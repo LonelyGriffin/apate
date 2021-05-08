@@ -1,3 +1,5 @@
+import {ISerialized, ISerializable} from '../serializable'
+import {deserializeAnyMatcher} from './deserialize-any-matcher'
 import {IMatcher, MatcherType} from './matcher'
 
 export interface ILogicalMatcher<T> extends IMatcher<T> {
@@ -5,7 +7,7 @@ export interface ILogicalMatcher<T> extends IMatcher<T> {
   and(matcher: IMatcher<T>): ILogicalMatcher<T>
 }
 
-export abstract class LogicalMatcher<T> implements ILogicalMatcher<T> {
+export abstract class LogicalMatcher<T> implements ILogicalMatcher<T>, ISerializable {
   constructor(protected matchers: Array<IMatcher<T>> = []) {}
 
   abstract readonly type: MatcherType
@@ -34,7 +36,8 @@ export class OrMatcher<T> extends LogicalMatcher<T> {
   }
 
   static deserialize<T>(serialized: ISerialized<OrMatcher<T>>) {
-    return new OrMatcher<T>(serialized.matchers as Array<IMatcher<T>>)
+    const matchers = serialized.matchers.map(deserializeAnyMatcher) as Array<IMatcher<T>>
+    return new OrMatcher<T>(matchers)
   }
 }
 
@@ -45,6 +48,7 @@ export class AndMatcher<T> extends LogicalMatcher<T> {
   }
 
   static deserialize<T>(serialized: ISerialized<AndMatcher<T>>) {
-    return new AndMatcher<T>(serialized.matchers as Array<IMatcher<T>>)
+    const matchers = serialized.matchers.map(deserializeAnyMatcher) as Array<IMatcher<T>>
+    return new AndMatcher<T>(matchers)
   }
 }

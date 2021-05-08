@@ -1,5 +1,6 @@
-import { HttpInterceptorResolver, HttpInterceptor } from './http-interceptor';
+import { HttpInterceptor } from './http-interceptor';
 import { Request } from 'express';
+import { HttpResolver } from '../resolver/http-resolver';
 declare type MatchMethod = {
     <C>(type: 'custom', matcher: (target: Request, context: C) => boolean, context: C): HttpInterceptorBuilder;
     (type: 'path-exact', path: string): HttpInterceptorBuilder;
@@ -7,12 +8,12 @@ declare type MatchMethod = {
 };
 export declare class HttpInterceptorBuilder {
     private commitHandler;
-    constructor(commitHandler?: (interceptor: HttpInterceptor) => void);
-    commit(): HttpInterceptor;
+    constructor(commitHandler?: (interceptor: HttpInterceptor) => Promise<void>);
+    commit(): Promise<HttpInterceptor>;
     match: MatchMethod;
     andMatch: MatchMethod;
     orMatch: MatchMethod;
-    resolveWith(resolver: HttpInterceptorResolver): this;
+    resolveWith(...params: ConstructorParameters<typeof HttpResolver>): this;
     buildInterceptor(): HttpInterceptor;
     private resolver?;
     private matcher;

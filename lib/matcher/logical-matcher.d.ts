@@ -1,9 +1,10 @@
+import { ISerialized, ISerializable } from '../serializable';
 import { IMatcher, MatcherType } from './matcher';
 export interface ILogicalMatcher<T> extends IMatcher<T> {
     or(matcher: IMatcher<T>): ILogicalMatcher<T>;
     and(matcher: IMatcher<T>): ILogicalMatcher<T>;
 }
-export declare abstract class LogicalMatcher<T> implements ILogicalMatcher<T> {
+export declare abstract class LogicalMatcher<T> implements ILogicalMatcher<T>, ISerializable {
     protected matchers: Array<IMatcher<T>>;
     constructor(matchers?: Array<IMatcher<T>>);
     abstract readonly type: MatcherType;

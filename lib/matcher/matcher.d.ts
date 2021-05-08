@@ -1,3 +1,4 @@
+import { ISerializable, ISerialized } from '../serializable';
 export declare type MatcherType = 'custom' | 'or' | 'and' | 'path-exact' | 'method-exact';
 export interface IMatcher<T> extends ISerializable {
     readonly type: MatcherType;

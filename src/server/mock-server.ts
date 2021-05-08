@@ -1,17 +1,19 @@
+import bodyParser from 'body-parser'
 import express, {Express, Request, Response} from 'express'
 import {Server} from 'node:http'
 import {IInterceptor} from '../interceptor/interceptor'
-import {mockServerUrl} from '../utils'
 
 export interface IMockServer {
   run(): Promise<void>
   shutdown(): Promise<void>
-  queueInterceptor(interceptor: IInterceptor): void
+  queueInterceptors(...interceptor: IInterceptor[]): void
 }
 
 export class MockServer implements IMockServer {
   constructor(private host: string, private port: number) {
     this.expressApp = express()
+
+    this.expressApp.use(bodyParser.json())
 
     this.expressApp.all('/*', this.allRoutesHandler.bind(this))
   }
@@ -39,8 +41,8 @@ export class MockServer implements IMockServer {
     this.expressServer = undefined
   }
 
-  queueInterceptor(interceptor: IInterceptor) {
-    this.interceptorsQueue.push(interceptor)
+  queueInterceptors(...interceptors: IInterceptor[]) {
+    this.interceptorsQueue.push(...interceptors)
   }
 
   private expressApp: Express
