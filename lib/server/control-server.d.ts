@@ -13,4 +13,7 @@ export declare class ControlServer implements IControlServer {
     private expressApp;
     private expressServer?;
     private handlePostHttpInterceptor;
+    private handlePostProxyEnable;
+    private handlePostProxyDisable;
+    private getCapturedProxyInterceptors;
 }

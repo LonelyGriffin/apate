@@ -1,5 +1,6 @@
 import {DEFAULT_CONFIG, IConfig} from './config'
 import {ControlClient} from './control-client'
+import {HttpInterceptor} from './interceptor/http-interceptor'
 import {HttpInterceptorBuilder} from './interceptor/http-interceptor-builder'
 import {ControlServer, IControlServer} from './server/control-server'
 import {IMockServer, MockServer} from './server/mock-server'
@@ -9,7 +10,12 @@ export class Apate {
   constructor(config?: Partial<IConfig>) {
     this.config = {...DEFAULT_CONFIG, ...config}
 
-    this.mockServer = new MockServer(this.config.mockHost, this.config.mockPort)
+    this.mockServer = new MockServer(
+      this.config.mockHost,
+      this.config.mockPort,
+      this.config.originalHost,
+      this.config.originalPort
+    )
     this.controlServer = new ControlServer(this.config.controlHost, this.config.controlPort, this.mockServer)
     this.client = new ControlClient(this.config)
   }
@@ -28,6 +34,17 @@ export class Apate {
       async (interceptor) => await this.client.queueHttpInterceptors(interceptor),
       scope
     )
+  }
+
+  async startHttpProxy() {
+    debugger
+    await this.client.enableProxy()
+  }
+  async stopHttpProxy() {
+    await this.client.disableProxy()
+  }
+  async capturedHttpRequestsAsInterceptors(): Promise<HttpInterceptor[]> {
+    return await this.client.getCapturedInterceptors()
   }
 
   private config: IConfig

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-export interface IInterceptor {
+import { ISerializable } from '../serializable';
+export interface IInterceptor extends ISerializable {
     scope?: string;
     isResolved: boolean;
     match(req: Request): boolean;

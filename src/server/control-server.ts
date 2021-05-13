@@ -18,6 +18,9 @@ export class ControlServer implements IControlServer {
     this.expressApp.get('/health', (_, res) => res.send('OK'))
 
     this.expressApp.post('/http-interceptors', this.handlePostHttpInterceptor)
+    this.expressApp.post('/proxy/enable', this.handlePostProxyEnable)
+    this.expressApp.post('/proxy/disable', this.handlePostProxyDisable)
+    this.expressApp.post('/captured-proxy-interceptors', this.getCapturedProxyInterceptors)
   }
 
   async run() {
@@ -49,5 +52,20 @@ export class ControlServer implements IControlServer {
     const interceptors: HttpInterceptor[] = req.body.map((x: any) => HttpInterceptor.deserialize(x))
     this.mockServer.queueInterceptors(...interceptors)
     return res.send(200)
+  }
+  private handlePostProxyEnable = (req: Request, res: Response) => {
+    debugger
+    this.mockServer.enableProxy()
+    return res.send(200)
+  }
+
+  private handlePostProxyDisable = (req: Request, res: Response) => {
+    this.mockServer.disableProxy()
+    return res.send(200)
+  }
+
+  private getCapturedProxyInterceptors = (req: Request, res: Response) => {
+    const body = this.mockServer.getCapturedProxyInterceptors().map((interceptor) => interceptor.serialize())
+    return res.send(body)
   }
 }

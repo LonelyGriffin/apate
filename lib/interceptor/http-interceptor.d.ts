@@ -17,6 +17,7 @@ export declare class HttpInterceptor implements IInterceptor, ISerializable {
         resolver: {
             resolver: import("transferable-function").TransferableFunction;
             context: unknown;
+            type: string;
         };
     };
     static deserialize(serialized: ISerialized<HttpInterceptor>): HttpInterceptor;
