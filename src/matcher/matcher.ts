@@ -7,7 +7,7 @@ export interface IMatcher<T, C = any> extends ISerializable {
   match(target: T): boolean
 }
 
-export class BaseMatcher<T, C = any> implements IMatcher<T, C>, ISerializable {
+export class BaseMatcher<T, C = any> implements IMatcher<T, C> {
   constructor(readonly type: string, private matcher: (target: T, context: C) => boolean, readonly context: C) {}
   match(target: T) {
     return this.matcher(target, this.context)

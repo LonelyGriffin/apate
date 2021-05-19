@@ -19,12 +19,7 @@ describe('General tests', () => {
     await pactum.spec().get(healthUrl).expectStatus(200).expectBody('OK')
 
     await apate.shutdown()
-    await pactum
-      .spec()
-      .get(healthUrl)
-      .expect(({res}) => {
-        expect((res as any).code).toBe('ECONNREFUSED')
-      })
+    // await pactum.spec().get(healthUrl).expectError({code: 'ECONNREFUSED'})c
   })
   test('Base http mock case', async () => {
     const apate = new Apate(TEST_APATE_CONFIG)
