@@ -1,6 +1,5 @@
 import {Request, Response} from 'express'
-import {deserializeAnyMatcher} from '../matcher/deserialize-any-matcher'
-import {IMatcher} from '../matcher/matcher'
+import {BaseMatcher, IMatcher} from '../matcher/matcher'
 import {HttpResolver} from '../resolver/http-resolver'
 import {ISerializable, ISerialized} from '../serializable'
 import {IInterceptor} from './interceptor'
@@ -22,13 +21,17 @@ export class HttpInterceptor implements IInterceptor, ISerializable {
   serialize() {
     return {
       scope: this.scope,
-      matcher: this.matcher.serialize() as any,
+      matcher: this.matcher.serialize() as ISerialized<BaseMatcher<Request, any>>,
       resolver: this.resolver.serialize()
     }
   }
 
   static deserialize(serialized: ISerialized<HttpInterceptor>) {
-    const matcher = deserializeAnyMatcher(serialized.matcher) as IMatcher<Request>
+    const matcher = new BaseMatcher(
+      serialized.matcher.type,
+      serialized.matcher.matcher as any,
+      serialized.matcher.context
+    )
     const resolver = HttpResolver.deserialize(serialized.resolver)
     return new HttpInterceptor(matcher, resolver, serialized.scope)
   }
