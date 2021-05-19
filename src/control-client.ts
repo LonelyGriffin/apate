@@ -13,18 +13,19 @@ export class ControlClient {
       method: 'post',
       body,
       headers: {'Content-Type': 'application/json'}
-    }).catch((e) => {
-      debugger
     })
   }
 
   enableProxy = async () => {
-    debugger
-    await fetch(controlServerUrl(this.config, '/proxy/enable'))
+    await fetch(controlServerUrl(this.config, '/proxy/enable'), {
+      method: 'post'
+    })
   }
 
   disableProxy = async () => {
-    await fetch(controlServerUrl(this.config, '/proxy/disable'))
+    await fetch(controlServerUrl(this.config, '/proxy/disable'), {
+      method: 'post'
+    })
   }
 
   getCapturedInterceptors = async () => {

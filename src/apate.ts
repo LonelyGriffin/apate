@@ -37,7 +37,6 @@ export class Apate {
   }
 
   async startHttpProxy() {
-    debugger
     await this.client.enableProxy()
   }
   async stopHttpProxy() {

@@ -2,8 +2,8 @@ import bodyParser from 'body-parser'
 import express, {Express, Request, Response} from 'express'
 import {Server} from 'node:http'
 import {IInterceptor} from '../interceptor/interceptor'
-import fetch from 'node-fetch'
 import {HttpInterceptorBuilder} from '../interceptor/http-interceptor-builder'
+import http from 'http'
 
 export interface IMockServer {
   run(): Promise<void>
@@ -51,7 +51,6 @@ export class MockServer implements IMockServer {
   }
 
   enableProxy() {
-    debugger
     this.proxyEnabled = true
   }
 
@@ -70,7 +69,6 @@ export class MockServer implements IMockServer {
   private capturedProxyInterceptors: IInterceptor[] = []
 
   private async allRoutesHandler(req: Request, res: Response) {
-    debugger
     const scope = req.query['apate-scope']
     const matchedAndUnresolved = this.interceptorsQueue.find(
       (interceptor) => !interceptor.isResolved && interceptor.match(req) && scope === interceptor.scope
@@ -81,34 +79,57 @@ export class MockServer implements IMockServer {
         throw 'Not found interceptor'
       }
 
-      const origRes = await fetch(req.url, {
-        method: req.method,
-        body: req.body
-      })
-
-      const capturedInterceptor = new HttpInterceptorBuilder()
-        .match('method-exact', req.method)
-        .andMatch('path-exact', req.path)
-        .resolveWith(
-          (_, res, data: any) => {
-            res.statusCode = data.status
-            res.statusMessage = data.statusText
-            res.send(data.body)
-            return res
-          },
-          {
-            status: origRes.status,
-            statusText: origRes.statusText,
-            body: origRes.body
-          }
-        )
-        .buildInterceptor()
-
-      this.capturedProxyInterceptors.push(capturedInterceptor)
-
+      this.makeProxy(req, res)
       return
     }
 
     return matchedAndUnresolved.resolve(req, res)
+  }
+
+  makeProxy(origReq: Request, origRes: Response) {
+    const options = {
+      host: this.proxyHost,
+      port: this.proxyPort,
+      path: origReq.path,
+      method: origReq.method,
+      headers: origReq.headers
+    }
+
+    const req = http
+      .request(options, (res) => {
+        let bodyString = ''
+        res.on('data', (chunk) => {
+          bodyString += chunk
+        })
+        res.on('end', () => {
+          const capturedInterceptor = new HttpInterceptorBuilder()
+            .match('method-exact', origReq.method)
+            .andMatch('path-exact', origReq.path)
+            .resolveWith(
+              (_, res, data: any) => {
+                res.statusCode = data.statusCode
+                res.statusMessage = data.statusMessage
+                return res.send(data.body)
+              },
+              {
+                statusCode: res.statusCode,
+                statusMessage: origRes.statusMessage,
+                body: bodyString
+              }
+            )
+            .buildInterceptor()
+          this.capturedProxyInterceptors.push(capturedInterceptor)
+
+          capturedInterceptor.resolve(origReq, origRes)
+          origRes.end()
+        })
+      })
+      .on('error', (e) => {
+        origRes.end()
+      })
+
+    req.end()
+
+    origReq.on('data', (chunk) => req.write(chunk))
   }
 }

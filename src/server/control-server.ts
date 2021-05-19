@@ -20,7 +20,7 @@ export class ControlServer implements IControlServer {
     this.expressApp.post('/http-interceptors', this.handlePostHttpInterceptor)
     this.expressApp.post('/proxy/enable', this.handlePostProxyEnable)
     this.expressApp.post('/proxy/disable', this.handlePostProxyDisable)
-    this.expressApp.post('/captured-proxy-interceptors', this.getCapturedProxyInterceptors)
+    this.expressApp.get('/captured-proxy-interceptors', this.getCapturedProxyInterceptors)
   }
 
   async run() {
@@ -54,7 +54,6 @@ export class ControlServer implements IControlServer {
     return res.send(200)
   }
   private handlePostProxyEnable = (req: Request, res: Response) => {
-    debugger
     this.mockServer.enableProxy()
     return res.send(200)
   }

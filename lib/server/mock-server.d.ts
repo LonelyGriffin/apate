@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { IInterceptor } from '../interceptor/interceptor';
 export interface IMockServer {
     run(): Promise<void>;
@@ -25,4 +26,5 @@ export declare class MockServer implements IMockServer {
     private proxyEnabled;
     private capturedProxyInterceptors;
     private allRoutesHandler;
+    makeProxy(origReq: Request, origRes: Response): void;
 }

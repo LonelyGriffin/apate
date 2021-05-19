@@ -112,42 +112,32 @@ describe('General tests', () => {
     await apate.shutdown()
   })
 
-  it.only('proxy with captured interceptors prototype', async () => {
-    try {
-      const expected = 'OK'
-      const apateForOriginal = new Apate({
-        controlPort: 8400,
-        mockHost: TEST_APATE_CONFIG.originalHost,
-        mockPort: TEST_APATE_CONFIG.originalPort
-      })
-      const apate = new Apate(TEST_APATE_CONFIG)
-      debugger
-      await apateForOriginal.run()
-      await apate.run()
+  it('proxy with captured interceptors prototype', async () => {
+    const expected = 'OK'
+    const apateForOriginal = new Apate({
+      controlPort: 8400,
+      mockHost: TEST_APATE_CONFIG.originalHost,
+      mockPort: TEST_APATE_CONFIG.originalPort
+    })
+    const apate = new Apate(TEST_APATE_CONFIG)
+    await apateForOriginal.run()
+    await apate.run()
 
-      await apateForOriginal
-        .mockHttp()
-        .match('path-exact', '/test')
-        .resolveWith((_, res, data) => res.send(data), expected)
-        .commit()
+    await apateForOriginal
+      .mockHttp()
+      .match('path-exact', '/test')
+      .resolveWith((_, res, data) => res.send(data), expected)
+      .commit()
 
-      await apate.startHttpProxy()
+    await apate.startHttpProxy()
 
-      await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expected)
+    await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expected)
+    const capturedInterceptors = await apate.capturedHttpRequestsAsInterceptors()
+    await apate.stopHttpProxy()
+    await apate.client.queueHttpInterceptors(...capturedInterceptors)
 
-      // const capturedInterceptors = await apate.capturedHttpRequestsAsInterceptors()
-      debugger
-      // await apate.stopHttpProxy()
-      // await apate.client.queueHttpInterceptors(...capturedInterceptors)
-
-      await apateForOriginal.shutdown()
-
-      // await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expected)
-
-      await apate.shutdown()
-    } catch (e) {
-      console.log('ERR', e)
-      debugger
-    }
+    await apateForOriginal.shutdown()
+    await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expected)
+    await apate.shutdown()
   })
 })
