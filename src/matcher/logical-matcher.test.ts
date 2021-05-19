@@ -1,6 +1,6 @@
-import {HttpPathExactMatcher} from '../../src/matcher/http-matcher'
-import {OrMatcher, AndMatcher} from '../../src/matcher/logical-matcher'
-import {createRequestStub} from '../utils'
+import {HttpPathExactMatcher} from './http-matcher'
+import {OrMatcher, AndMatcher} from './logical-matcher'
+import {createRequestStub} from '../../test/utils'
 
 describe('matcher', () => {
   describe('logical-matcher', () => {

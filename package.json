@@ -4,9 +4,10 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "test:jest": "jest --runInBand",
-    "test:debugger": "npm run build && node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config jest.config.js",
-    "test": "npm run build && npm run test:jest",
+    "test:unit": "jest --runInBand",
+    "test:e2e": "jest --runInBand --config jest.config.e2e.js",
+    "test:unit:debugger": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config jest.config.js",
+    "test:e2e:debugger": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --config jest.config.e2e.js",
     "build": "rm -rf ./lib && tsc --build"
   },
   "repository": {

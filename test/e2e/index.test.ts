@@ -1,10 +1,10 @@
 // Check types exports
-import type {IApateConfig} from '../lib'
+import type {IApateConfig} from '../../lib'
 
-import {Apate} from '../lib'
+import {Apate} from '../../lib'
 import pactum from 'pactum'
-import {TEST_APATE_CONFIG} from './apate-config'
-import {controlServerUrl, mockServerUrl} from '../src/utils'
+import {TEST_APATE_CONFIG} from '../apate-config'
+import {controlServerUrl, mockServerUrl} from '../../src/utils'
 
 describe('General tests', () => {
   test('There are exported all entities', () => {

@@ -1,5 +1,5 @@
-import {HttpResolver} from '../../src/resolver/http-resolver'
-import {createRequestStub, createResponseStub} from '../utils'
+import {HttpResolver} from './http-resolver'
+import {createRequestStub, createResponseStub} from '../../test/utils'
 
 describe('resolver', () => {
   describe('http-resolver', () => {
