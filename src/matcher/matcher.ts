@@ -1,14 +1,17 @@
-import {serializeFn, deserializeFn} from 'transferable-function'
+import {deserializeFn, serializeFn} from 'transferable-function'
 import {ISerializable, ISerialized} from '../serializable'
 
-export interface IMatcher<T, C = any> extends ISerializable {
-  readonly type: string
-  readonly context: C
+export type MatcherType = 'custom-matcher' | 'or-matcher' | 'and-matcher' | 'http-matcher'
+
+export interface IMatcher<T> extends ISerializable {
+  readonly type: MatcherType
   match(target: T): boolean
+  serialize(): {type: MatcherType}
 }
 
-export class BaseMatcher<T, C = any> implements IMatcher<T, C> {
-  constructor(readonly type: string, private matcher: (target: T, context: C) => boolean, readonly context: C) {}
+export class CustomMatcher<T, C = unknown> implements IMatcher<T> {
+  readonly type: MatcherType = 'custom-matcher'
+  constructor(private matcher: (target: T, context: C) => boolean, readonly context: C) {}
   match(target: T) {
     return this.matcher(target, this.context)
   }
@@ -19,8 +22,8 @@ export class BaseMatcher<T, C = any> implements IMatcher<T, C> {
       context: this.context
     }
   }
-  static deserialize<T, C = unknown>(serialized: ISerialized<BaseMatcher<T, C>>) {
+  static deserialize<T, C = unknown>(serialized: ISerialized<CustomMatcher<T, C>>) {
     const matcher = deserializeFn(serialized.matcher) as (target: T, context: C) => boolean
-    return new BaseMatcher(serialized.type, matcher, serialized.context)
+    return new CustomMatcher(matcher, serialized.context)
   }
 }

@@ -1,14 +1,13 @@
 import {HttpInterceptor} from './http-interceptor'
 import {Request} from 'express'
 import {AndMatcher, LogicalMatcher} from '../matcher/logical-matcher'
-import {BaseMatcher, IMatcher} from '../matcher/matcher'
+import {CustomMatcher, IMatcher} from '../matcher/matcher'
 import {HttpResolver} from '../resolver/http-resolver'
-import {HttpMethodExactMatcher, HttpPathExactMatcher} from '../matcher/http-matcher'
+import {HttpMatcher, HttpMatcherConfig} from '../matcher/http-matcher'
 
 type MatchMethod = {
-  <C>(type: 'custom', matcher: (target: Request, context: C) => boolean, context: C): HttpInterceptorBuilder
-  (type: 'path-exact', path: string): HttpInterceptorBuilder
-  (type: 'method-exact', path: string): HttpInterceptorBuilder
+  <C = undefined>(matcher: (target: Request, context: C) => boolean, context: C): HttpInterceptorBuilder
+  (config: HttpMatcherConfig): HttpInterceptorBuilder
 }
 
 export class HttpInterceptorBuilder {
@@ -51,15 +50,10 @@ export class HttpInterceptorBuilder {
   private matcher: LogicalMatcher<Request> = new AndMatcher<Request>()
 
   private matchArgsToMatcher = (args: any): IMatcher<Request> => {
-    switch (args[0]) {
-      case 'custom':
-        return new BaseMatcher(...(args as [string, any, any]))
-      case 'path-exact':
-        return new HttpPathExactMatcher(args[1])
-      case 'method-exact':
-        return new HttpMethodExactMatcher(args[1])
-      default:
-        return args[0]
+    if (typeof args[0] === 'function') {
+      return new CustomMatcher(args[0], args[1])
+    } else {
+      return new HttpMatcher(args[0])
     }
   }
 }

@@ -1,25 +1,23 @@
 import { Request } from 'express';
-import { ISerializable, ISerialized } from '../serializable';
-import { IMatcher } from './matcher';
-export declare class HttpPathExactMatcher implements IMatcher<Request>, ISerializable {
-    private expected;
-    readonly type = "path-exact";
-    constructor(expected: string);
+import { ISerialized } from '../serializable';
+import { CustomMatcher, IMatcher, MatcherType } from './matcher';
+export declare type HttpMatcherConfig = {
+    'path-exact'?: string;
+    'method-exact'?: string;
+};
+export declare class HttpMatcher implements IMatcher<Request> {
+    private config;
+    readonly type: MatcherType;
+    constructor(config: HttpMatcherConfig);
     match(req: Request): boolean;
     serialize(): {
-        type: string;
-        expected: string;
+        type: MatcherType;
+        config: HttpMatcherConfig;
     };
-    static deserialize(serialized: ISerialized<HttpMethodExactMatcher>): HttpPathExactMatcher;
+    static deserialize(serialized: ISerialized<HttpMatcher>): HttpMatcher;
+    private matchByProp;
+    private matchByPathExactly;
+    private matchByMethodExactly;
 }
-export declare class HttpMethodExactMatcher implements IMatcher<Request>, ISerializable {
-    private expected;
-    readonly type = "method-exact";
-    constructor(expected: string);
-    match(req: Request): boolean;
-    serialize(): {
-        type: string;
-        expected: string;
-    };
-    static deserialize(serialized: ISerialized<HttpMethodExactMatcher>): HttpMethodExactMatcher;
-}
+export declare type CustomHttpMatcher<C> = CustomMatcher<Request, C>;
+export declare type AnyHttpMather = CustomHttpMatcher<any> | HttpMatcher;

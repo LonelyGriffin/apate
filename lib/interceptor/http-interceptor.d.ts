@@ -7,13 +7,15 @@ export declare class HttpInterceptor implements IInterceptor, ISerializable {
     private matcher;
     private resolver;
     readonly scope?: string | undefined;
-    constructor(matcher: IMatcher<Request>, resolver: HttpResolver, scope?: string | undefined);
+    constructor(matcher: IMatcher<any>, resolver: HttpResolver, scope?: string | undefined);
     get isResolved(): boolean;
     match(req: Request): boolean;
     resolve(req: Request, res: Response): Response<any, Record<string, any>>;
     serialize(): {
         scope: string | undefined;
-        matcher: any;
+        matcher: {
+            type: import("../matcher/matcher").MatcherType;
+        };
         resolver: {
             resolver: import("transferable-function").TransferableFunction;
             context: unknown;

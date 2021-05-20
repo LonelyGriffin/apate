@@ -1,56 +1,51 @@
-import {deserializeFn} from 'transferable-function'
 import {ISerialized, ISerializable} from '../serializable'
-import {BaseMatcher, IMatcher} from './matcher'
+import {deserializeAnyMatcher} from './deserialize-any-matcher'
+import {IMatcher, MatcherType} from './matcher'
 
-export abstract class LogicalMatcher<T> implements IMatcher<T, undefined>, ISerializable {
-  constructor(protected matchers: Array<IMatcher<T, any>> = []) {}
+export abstract class LogicalMatcher<T> implements IMatcher<T>, ISerializable {
+  constructor(protected matchers: Array<IMatcher<T>> = []) {}
 
-  abstract readonly type: string
-  readonly context: undefined
+  abstract readonly type: MatcherType
   abstract match(target: T): boolean
 
-  or(matcher: IMatcher<T, any>) {
+  or(matcher: IMatcher<T>) {
     return new OrMatcher<T>([this, matcher])
   }
 
-  and(matcher: IMatcher<T, any>) {
+  and(matcher: IMatcher<T>) {
     return new AndMatcher<T>([this, matcher])
   }
 
   serialize() {
     return {
       type: this.type,
-      matchers: this.matchers.map((matcher) => matcher.serialize()) as Array<ISerialized<BaseMatcher<any, any>>>
+      matchers: this.matchers.map((matcher) => matcher.serialize()) as Array<IMatcher<T>>
     }
   }
 }
 
 export class OrMatcher<T> extends LogicalMatcher<T> {
-  readonly type = 'or'
+  readonly type: MatcherType = 'or-matcher'
   readonly context = undefined
   match(target: T) {
     return this.matchers.reduce((result, matcher) => result || matcher.match(target), false)
   }
 
   static deserialize<T>(serialized: ISerialized<OrMatcher<T>>) {
-    const matchers = serialized.matchers.map(
-      (matcherData) => new BaseMatcher(matcherData.type, deserializeFn(matcherData.matcher) as any, matcherData.context)
-    )
+    const matchers = serialized.matchers.map((serializedMatcher) => deserializeAnyMatcher(serializedMatcher))
     return new OrMatcher<T>(matchers)
   }
 }
 
 export class AndMatcher<T> extends LogicalMatcher<T> {
-  readonly type = 'and'
+  readonly type: MatcherType = 'and-matcher'
   readonly context = undefined
   match(target: T) {
     return this.matchers.reduce((result, matcher) => result && matcher.match(target), true)
   }
 
   static deserialize<T>(serialized: ISerialized<AndMatcher<T>>) {
-    const matchers = serialized.matchers.map(
-      (matcherData) => new BaseMatcher(matcherData.type, deserializeFn(matcherData.matcher) as any, matcherData.context)
-    )
+    const matchers = serialized.matchers.map((serializedMatcher) => deserializeAnyMatcher(serializedMatcher))
     return new AndMatcher<T>(matchers)
   }
 }

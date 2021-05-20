@@ -103,8 +103,10 @@ export class MockServer implements IMockServer {
         })
         res.on('end', () => {
           const capturedInterceptor = new HttpInterceptorBuilder()
-            .match('method-exact', origReq.method)
-            .andMatch('path-exact', origReq.path)
+            .match({
+              'method-exact': origReq.method,
+              'path-exact': origReq.path
+            })
             .resolveWith(
               (_, res, data: any) => {
                 res.statusCode = data.statusCode

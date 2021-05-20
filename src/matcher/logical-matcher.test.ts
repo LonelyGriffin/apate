@@ -1,4 +1,4 @@
-import {HttpPathExactMatcher} from './http-matcher'
+import {HttpMatcher} from './http-matcher'
 import {OrMatcher, AndMatcher} from './logical-matcher'
 import {createRequestStub} from '../../test/utils'
 
@@ -30,8 +30,8 @@ describe('matcher', () => {
 })
 
 const testOrMatcherWithPathExact = (firstPath: string, secondPath: string, pathToMatch: string, expected: boolean) => {
-  const firstSubMatcher = new HttpPathExactMatcher(firstPath)
-  const secondSubMatcher = new HttpPathExactMatcher(secondPath)
+  const firstSubMatcher = new HttpMatcher({'path-exact': firstPath})
+  const secondSubMatcher = new HttpMatcher({'path-exact': secondPath})
   const orMatcher = new OrMatcher([firstSubMatcher, secondSubMatcher])
   const orMatcherAfterSerialization = OrMatcher.deserialize(orMatcher.serialize())
   const request = createRequestStub({path: pathToMatch})
@@ -42,8 +42,8 @@ const testOrMatcherWithPathExact = (firstPath: string, secondPath: string, pathT
 }
 
 const testAndMatcherWithPathExact = (firstPath: string, secondPath: string, pathToMatch: string, expected: boolean) => {
-  const firstSubMatcher = new HttpPathExactMatcher(firstPath)
-  const secondSubMatcher = new HttpPathExactMatcher(secondPath)
+  const firstSubMatcher = new HttpMatcher({'path-exact': firstPath})
+  const secondSubMatcher = new HttpMatcher({'path-exact': secondPath})
   const andMatcher = new AndMatcher([firstSubMatcher, secondSubMatcher])
   const andMatcherAfterSerialization = AndMatcher.deserialize(andMatcher.serialize())
   const request = createRequestStub({path: pathToMatch})

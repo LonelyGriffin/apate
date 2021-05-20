@@ -1,10 +1,10 @@
 import { HttpInterceptor } from './http-interceptor';
 import { Request } from 'express';
 import { HttpResolver } from '../resolver/http-resolver';
+import { HttpMatcherConfig } from '../matcher/http-matcher';
 declare type MatchMethod = {
-    <C>(type: 'custom', matcher: (target: Request, context: C) => boolean, context: C): HttpInterceptorBuilder;
-    (type: 'path-exact', path: string): HttpInterceptorBuilder;
-    (type: 'method-exact', path: string): HttpInterceptorBuilder;
+    <C = undefined>(matcher: (target: Request, context: C) => boolean, context: C): HttpInterceptorBuilder;
+    (config: HttpMatcherConfig): HttpInterceptorBuilder;
 };
 export declare class HttpInterceptorBuilder {
     private commitHandler;

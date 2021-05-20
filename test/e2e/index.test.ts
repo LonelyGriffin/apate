@@ -29,8 +29,10 @@ describe('General tests', () => {
 
     await apate
       .mockHttp()
-      .match('method-exact', 'GET')
-      .andMatch('path-exact', '/test')
+      .match({
+        'path-exact': '/test',
+        'method-exact': 'GET'
+      })
       .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
       .commit()
 
@@ -46,7 +48,9 @@ describe('General tests', () => {
 
     await apate
       .mockHttp()
-      .match('method-exact', 'GET')
+      .match({
+        'path-exact': '/test'
+      })
       .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
       .commit()
 
@@ -62,7 +66,7 @@ describe('General tests', () => {
 
     await apate
       .mockHttp()
-      .match('custom', (request, context) => context.result, {result: true})
+      .match((request, context) => context.result, {result: true})
       .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
       .commit()
 
@@ -79,13 +83,17 @@ describe('General tests', () => {
 
     await apate
       .mockHttp('first-scope')
-      .match('method-exact', 'GET')
+      .match({
+        'path-exact': '/test'
+      })
       .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedForFirstRequest)
       .commit()
 
     await apate
       .mockHttp('second-scope')
-      .match('method-exact', 'GET')
+      .match({
+        'path-exact': '/test'
+      })
       .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedForSecondRequest)
       .commit()
 
@@ -120,7 +128,9 @@ describe('General tests', () => {
 
     await apateForOriginal
       .mockHttp()
-      .match('path-exact', '/test')
+      .match({
+        'path-exact': '/test'
+      })
       .resolveWith((_, res, data) => res.send(data), expected)
       .commit()
 
