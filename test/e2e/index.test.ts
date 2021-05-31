@@ -33,7 +33,7 @@ describe('General tests', () => {
         'path-exact': '/test',
         'method-exact': 'GET'
       })
-      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
+      .resolve((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
       .commit()
 
     await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expectedResponseBody)
@@ -51,7 +51,7 @@ describe('General tests', () => {
       .match({
         'path-exact': '/test'
       })
-      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
+      .resolve((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
       .commit()
 
     await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expectedResponseBody)
@@ -67,7 +67,7 @@ describe('General tests', () => {
     await apate
       .mockHttp()
       .match((request, context) => context.result, {result: true})
-      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
+      .resolve((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedResponseBody)
       .commit()
 
     await pactum.spec().get(mockServerUrl(TEST_APATE_CONFIG, 'test')).expectBody(expectedResponseBody)
@@ -86,7 +86,7 @@ describe('General tests', () => {
       .match({
         'path-exact': '/test'
       })
-      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedForFirstRequest)
+      .resolve((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedForFirstRequest)
       .commit()
 
     await apate
@@ -94,7 +94,7 @@ describe('General tests', () => {
       .match({
         'path-exact': '/test'
       })
-      .resolveWith((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedForSecondRequest)
+      .resolve((req, res, expectedResponseBody) => res.send(expectedResponseBody), expectedForSecondRequest)
       .commit()
 
     // make request for second in order interceptor firstly
@@ -131,7 +131,7 @@ describe('General tests', () => {
       .match({
         'path-exact': '/test'
       })
-      .resolveWith((_, res, data) => res.send(data), expected)
+      .resolve((_, res, data) => res.send(data), expected)
       .commit()
 
     await apate.startHttpProxy()

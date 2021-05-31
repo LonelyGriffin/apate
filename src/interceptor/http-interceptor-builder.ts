@@ -1,13 +1,18 @@
 import {HttpInterceptor} from './http-interceptor'
-import {Request} from 'express'
+import {Request, Response} from 'express'
 import {AndMatcher, LogicalMatcher} from '../matcher/logical-matcher'
 import {CustomMatcher, IMatcher} from '../matcher/matcher'
-import {HttpResolver} from '../resolver/http-resolver'
+import {HttpCustomResolver, HttpResolver, HttpResolverConfig, IHttpResolver} from '../resolver/http-resolver'
 import {HttpMatcher, HttpMatcherConfig} from '../matcher/http-matcher'
 
 type MatchMethod = {
   <C = undefined>(matcher: (target: Request, context: C) => boolean, context: C): HttpInterceptorBuilder
   (config: HttpMatcherConfig): HttpInterceptorBuilder
+}
+
+type ResolveMethod = {
+  <C>(resolve: (req: Request, res: Response, context: C) => Response, context: C): HttpInterceptorBuilder
+  (response: Partial<HttpResolverConfig>): HttpInterceptorBuilder
 }
 
 export class HttpInterceptorBuilder {
@@ -34,8 +39,8 @@ export class HttpInterceptorBuilder {
     return this
   }
 
-  resolveWith(...params: ConstructorParameters<typeof HttpResolver>) {
-    this.resolver = new HttpResolver(...params)
+  resolve: ResolveMethod = (...args: any) => {
+    this.resolver = this.matchArgsToResolver(args)
     return this
   }
 
@@ -46,7 +51,7 @@ export class HttpInterceptorBuilder {
     return new HttpInterceptor(this.matcher, this.resolver, this.scope)
   }
 
-  private resolver?: HttpResolver
+  private resolver?: IHttpResolver
   private matcher: LogicalMatcher<Request> = new AndMatcher<Request>()
 
   private matchArgsToMatcher = (args: any): IMatcher<Request> => {
@@ -54,6 +59,14 @@ export class HttpInterceptorBuilder {
       return new CustomMatcher(args[0], args[1])
     } else {
       return new HttpMatcher(args[0])
+    }
+  }
+
+  private matchArgsToResolver = (args: any): IHttpResolver => {
+    if (typeof args[0] === 'function') {
+      return new HttpCustomResolver(args[0], args[1])
+    } else {
+      return new HttpResolver(args[0])
     }
   }
 }

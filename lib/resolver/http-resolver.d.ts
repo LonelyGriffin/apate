@@ -1,18 +1,39 @@
 import { Request, Response } from 'express';
 import { ISerializable, ISerialized } from '../serializable';
-export declare class HttpResolver<C = unknown> implements ISerializable {
+export declare type HttpResolverType = 'custom' | 'static';
+export interface IHttpResolver extends ISerializable {
+    readonly type: HttpResolverType;
+    resolve(req: Request, res: Response): Response;
+    serialize(): {
+        type: HttpResolverType;
+    };
+}
+export declare type HttpResolverConfig = {
+    body: string;
+    statusCode: number;
+    statusMessage: string;
+};
+export declare class HttpResolver implements IHttpResolver {
+    readonly type: HttpResolverType;
+    constructor(config: Partial<HttpResolverConfig>);
+    resolve(req: Request, res: Response): Response;
+    serialize(): {
+        type: HttpResolverType;
+        config: HttpResolverConfig;
+    };
+    static deserialize<C>(serialized: ISerialized<HttpResolver>): HttpResolver;
+    private config;
+}
+export declare class HttpCustomResolver<C> implements IHttpResolver {
     private resolver;
     private context;
-    private type;
-    constructor(resolver: (req: Request, res: Response, context: C) => Response, context: C, type?: string);
+    readonly type: HttpResolverType;
+    constructor(resolver: (req: Request, res: Response, context: C) => Response, context: C);
     resolve(req: Request, res: Response): Response;
     serialize(): {
         resolver: import("transferable-function").TransferableFunction;
         context: C;
-        type: string;
+        type: HttpResolverType;
     };
-    static deserialize<C>(serialized: ISerialized<HttpResolver<C>>): HttpResolver<C>;
-}
-export declare class HttpResolverWithBody<C> extends HttpResolver<C> {
-    constructor(body: C);
+    static deserialize<C>(serialized: ISerialized<HttpCustomResolver<C>>): HttpCustomResolver<C>;
 }

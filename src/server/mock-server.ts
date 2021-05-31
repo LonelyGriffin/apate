@@ -107,18 +107,11 @@ export class MockServer implements IMockServer {
               'method-exact': origReq.method,
               'path-exact': origReq.path
             })
-            .resolveWith(
-              (_, res, data: any) => {
-                res.statusCode = data.statusCode
-                res.statusMessage = data.statusMessage
-                return res.send(data.body)
-              },
-              {
-                statusCode: res.statusCode,
-                statusMessage: origRes.statusMessage,
-                body: bodyString
-              }
-            )
+            .resolve({
+              body: bodyString,
+              statusCode: res.statusCode,
+              statusMessage: origRes.statusMessage
+            })
             .buildInterceptor()
           this.capturedProxyInterceptors.push(capturedInterceptor)
 

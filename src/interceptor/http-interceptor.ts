@@ -1,11 +1,12 @@
 import {Request, Response} from 'express'
 import {deserializeAnyMatcher} from '../matcher/deserialize-any-matcher'
 import {IMatcher} from '../matcher/matcher'
-import {HttpResolver} from '../resolver/http-resolver'
+import {deserializeAnyResolver} from '../resolver/deserialize-any-resolver'
+import {IHttpResolver} from '../resolver/http-resolver'
 import {ISerializable, ISerialized} from '../serializable'
 import {IInterceptor} from './interceptor'
 export class HttpInterceptor implements IInterceptor, ISerializable {
-  constructor(private matcher: IMatcher<any>, private resolver: HttpResolver, public readonly scope?: string) {}
+  constructor(private matcher: IMatcher<any>, private resolver: IHttpResolver, public readonly scope?: string) {}
 
   get isResolved() {
     return this._isResolved
@@ -29,7 +30,7 @@ export class HttpInterceptor implements IInterceptor, ISerializable {
 
   static deserialize(serialized: ISerialized<HttpInterceptor>) {
     const matcher = deserializeAnyMatcher(serialized.matcher) as IMatcher<any>
-    const resolver = HttpResolver.deserialize(serialized.resolver)
+    const resolver = deserializeAnyResolver(serialized.resolver)
     return new HttpInterceptor(matcher, resolver, serialized.scope)
   }
 
